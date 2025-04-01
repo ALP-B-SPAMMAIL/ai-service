@@ -1,4 +1,4 @@
-package com.kt.ai.dto;
+package com.example.ai.dto;
 
 import lombok.Getter;
 import lombok.Setter;

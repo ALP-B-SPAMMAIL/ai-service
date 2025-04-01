@@ -1,14 +1,18 @@
-package com.kt.ai.eventDto;
+package com.example.ai.eventDto;
 
 import java.time.LocalDateTime;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Data
-public class ReportCreatedEventDto extends AbstractEventDto {
-    private Long id;
+@Getter
+@Setter
+@NoArgsConstructor  
+public class ReportCreatedEventDto extends AbstractDto {
+    private int id;
     private String actionBy;
-    private String whenActioned;
+    private LocalDateTime whenActioned;
     private String aiInput;
     private String aiOutput;
 }

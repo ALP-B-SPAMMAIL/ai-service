@@ -1,12 +1,10 @@
-package com.kt.ai.repository;
+package com.example.ai.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.kt.ai.model.Ai;
+import com.example.ai.model.Ai;
 
 @Repository
-public interface AiRepository extends JpaRepository<Ai, Long> {
-    
-    
+public interface AiRepository extends JpaRepository<Ai, Integer> {
 }

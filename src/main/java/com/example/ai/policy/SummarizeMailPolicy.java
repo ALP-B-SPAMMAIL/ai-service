@@ -1,31 +1,42 @@
-package com.kt.ai.policy;
+package com.example.ai.policy;
 
-import java.io.IOException;
+import com.example.ai.event.MailNotTaggedSpamEvent;
+import com.example.ai.eventDto.MailNotTaggedSpamEventDto;
+import com.example.ai.service.AiService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.messaging.handler.annotation.Header;
+import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.stereotype.Service;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
-import org.springframework.stereotype.Component;
-
-import com.kt.ai.model.Ai;
-import com.kt.ai.repository.AiRepository;
-import com.kt.ai.service.OpenAiService;
-
-import lombok.RequiredArgsConstructor;
-
-@Component
-@RequiredArgsConstructor
+@Service
 public class SummarizeMailPolicy {
-    private final OpenAiService openAiService;
-    private final AiRepository aiRepository;
+    private final ObjectMapper objectMapper = new ObjectMapper();
+    @Autowired
+    private AiService aiService;
 
-    public String execute(Ai ai) throws IOException {
-        // 프롬프트를 OpenAI에 보내서 요약 응답 받기
-        String summary = openAiService.chat(
-            "다음 메일 내용을 간단히 요약해줘:\n\n" + ai.getAiInput()
-        );
-
-        // 결과를 Aggregate에 저장
-        ai.complete(summary);
-        aiRepository.save(ai);
-
-        return summary;
+    @KafkaListener(topics = "mail", groupId = "mail-ai-mail-not-tagged-spam")
+    public void listen(
+            @Header(value = "type", required = false) String type,
+            @Payload String data
+    ) {
+        objectMapper.registerModule(new JavaTimeModule());
+        if (type != null && type.equals("MailNotTaggedSpamEvent")) {
+            try {
+                System.out.println("MailNotTaggedSpamEvent Received");
+                MailNotTaggedSpamEvent event = objectMapper.readValue(data, MailNotTaggedSpamEvent.class);
+                MailNotTaggedSpamEventDto payload = event.getPayload();
+                if (payload != null) {
+                    aiService.summarizeMail(payload);
+                } else {
+                    System.out.println("Warning: Payload is null");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 }
+    

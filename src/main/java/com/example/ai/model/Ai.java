@@ -1,4 +1,4 @@
-package com.kt.ai.model;
+package com.example.ai.model;
 
 import java.time.LocalDateTime;
 
@@ -19,7 +19,7 @@ import lombok.Setter;
 public class Ai {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private int id;
 
     private String actionBy;
     private LocalDateTime whenActioned;

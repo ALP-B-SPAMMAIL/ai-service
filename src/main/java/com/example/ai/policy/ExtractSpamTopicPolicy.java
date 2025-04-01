@@ -1,34 +1,42 @@
-package com.kt.ai.policy;
+package com.example.ai.policy;
 
-import java.io.IOException;
+import com.example.ai.event.MailTaggedSpamEvent;
+import com.example.ai.eventDto.MailTaggedSpamEventDto;
+import com.example.ai.service.AiService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.messaging.handler.annotation.Header;
+import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.stereotype.Service;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
-import org.springframework.stereotype.Component;
-
-import com.kt.ai.event.TopicExtractedEvent;
-import com.kt.ai.eventDto.TopicExtractedEventDto;
-import com.kt.ai.model.Ai;
-import com.kt.ai.repository.AiRepository;
-import com.kt.ai.service.OpenAiService;
-
-import lombok.RequiredArgsConstructor;
-
-@Component
-@RequiredArgsConstructor
+@Service
 public class ExtractSpamTopicPolicy {
-    private final OpenAiService openAiService;
-    private final AiRepository aiRepository;
+    private final ObjectMapper objectMapper = new ObjectMapper();
+    @Autowired
+    private AiService aiService;
 
-    public TopicExtractedEvent execute(Ai ai) throws IOException {
-        // 1. 프롬프트를 OpenAI에 전달
-        String result = openAiService.chat(ai.getAiInput());
-
-        // 2. Aggregate 상태 변경
-        ai.complete(result);
-
-        // 3. 저장
-        Ai saved = aiRepository.save(ai);
-
-        // 4. 도메인 이벤트 반환
-        return new TopicExtractedEvent(new TopicExtractedEventDto(saved.getId(), result));
+    @KafkaListener(topics = "mail", groupId = "mail-ai-mail-tagged-spam")
+    public void listen(
+            @Header(value = "type", required = false) String type,
+            @Payload String data
+    ) {
+        objectMapper.registerModule(new JavaTimeModule());
+        if (type != null && type.equals("MailTaggedSpamEvent")) {
+            try {
+                System.out.println("MailTaggedSpamEvent Received");
+                MailTaggedSpamEvent event = objectMapper.readValue(data, MailTaggedSpamEvent.class);
+                MailTaggedSpamEventDto payload = event.getPayload();
+                if (payload != null) {
+                    aiService.extractSpamTopic(payload);
+                } else {
+                    System.out.println("Warning: Payload is null");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 }
+    

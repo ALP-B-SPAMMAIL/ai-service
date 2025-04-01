@@ -1,6 +1,6 @@
-package com.kt.ai.event;
+package com.example.ai.event;
 
-import com.kt.ai.eventDto.ReportRequestCreatedEventDto;
+import com.example.ai.eventDto.ReportRequestCreatedEventDto;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -12,13 +12,11 @@ public class ReportRequestCreatedEvent extends AbstractEvent {
 
     public ReportRequestCreatedEvent() {
         super();
-        this.topic = "ReportRequestCreated";
     }
 
     public ReportRequestCreatedEvent(ReportRequestCreatedEventDto payload) {
         super(payload);
         this.payload = payload;
-        this.topic = "ReportRequestCreated";
     }
         
 }

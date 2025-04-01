@@ -1,4 +1,4 @@
-package com.kt.ai.kafka;
+package com.example.ai.kafka;
 
 import java.nio.charset.StandardCharsets;
 
@@ -8,10 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
+import com.example.ai.event.AbstractEvent;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.kt.ai.event.AbstractEvent;
 
 @Service
 public class KafkaProducer {
@@ -21,7 +21,7 @@ public class KafkaProducer {
 
     public void publish(AbstractEvent event) throws JsonProcessingException {
         objectMapper.registerModule(new JavaTimeModule());
-        ProducerRecord<String, String> record = new ProducerRecord<>(event.getTopic(), objectMapper.writeValueAsString(event));
+        ProducerRecord<String, String> record = new ProducerRecord<>("mail", objectMapper.writeValueAsString(event));
         record.headers().add(new RecordHeader("type", event.getEventType().getBytes(StandardCharsets.UTF_8)));
         kafkaTemplate.send(record);
     }

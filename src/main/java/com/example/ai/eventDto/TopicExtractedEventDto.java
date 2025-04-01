@@ -1,11 +1,18 @@
-package com.kt.ai.eventDto;
+package com.example.ai.eventDto;
 
-public class TopicExtractedEventDto extends AbstractEventDto {
-    private Long id;
-    private String aiOutput;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-    public TopicExtractedEventDto(Long id, String aiOutput) {
-        this.id = id;
-        this.aiOutput = aiOutput;
+@Getter
+@Setter
+@NoArgsConstructor
+public class TopicExtractedEventDto extends AbstractDto {
+    private int mailId;
+    private String topic;
+
+    public TopicExtractedEventDto(int mailId, String topic) {
+        this.mailId = mailId;
+        this.topic = topic;
     }
 }
