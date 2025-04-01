@@ -2,8 +2,6 @@ package com.kt.ai.model;
 
 import java.time.LocalDateTime;
 
-import org.checkerframework.checker.units.qual.A;
-
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

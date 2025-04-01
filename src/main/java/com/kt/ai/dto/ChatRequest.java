@@ -6,5 +6,9 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ChatRequest {
-    private String prompt;
+    private String targetId;
+    private String targetGender;
+    private String targetAge;
+    private String targetInterest;
+    private String topic;
 }

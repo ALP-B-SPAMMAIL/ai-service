@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kt.ai.dto.ChatRequest;
 import com.kt.ai.dto.ChatResponse;
+import com.kt.ai.eventDto.ReportRequestCreatedEventDto;
 import com.kt.ai.service.OpenAiService;
 
 @RestController
@@ -18,7 +19,13 @@ public class ChatController {
 
     @PostMapping
     public ChatResponse chat(@RequestBody ChatRequest request) throws Exception {
-        String result = openAiService.chat(request.getPrompt());
+        ReportRequestCreatedEventDto reportRequestCreatedEventDto = new ReportRequestCreatedEventDto();
+        reportRequestCreatedEventDto.setTargetId(Long.parseLong(request.getTargetId()));
+        reportRequestCreatedEventDto.setTargetGender(request.getTargetGender());
+        reportRequestCreatedEventDto.setTargetAge(request.getTargetAge());
+        reportRequestCreatedEventDto.setTargetInterest(request.getTargetInterest());
+        reportRequestCreatedEventDto.setTopic(request.getTopic());
+        String result = openAiService.createReport(reportRequestCreatedEventDto);
         return new ChatResponse(result);
     }
 }
