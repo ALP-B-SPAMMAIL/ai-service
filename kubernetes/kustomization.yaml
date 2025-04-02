@@ -1,8 +1,0 @@
-apiVersion: kustomize.config.k8s.io/v1beta1
-kind: Kustomization    # 묶어서 관리하기 
-namespace: ai-namespace
-resources:
-  - ai-service/deployment.yaml
-  - ai-service/service.yaml
-  - ai-service/ingress.yaml
-  - namespace.yaml
