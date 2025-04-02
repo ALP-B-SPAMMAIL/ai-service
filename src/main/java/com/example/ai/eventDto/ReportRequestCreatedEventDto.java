@@ -13,5 +13,6 @@ public class ReportRequestCreatedEventDto extends AbstractDto {
     private String targetGender;
     private String targetAge;
     private String targetInterest;
+    private String targetAddress;
     
 }

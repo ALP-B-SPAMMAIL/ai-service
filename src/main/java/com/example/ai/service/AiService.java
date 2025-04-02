@@ -47,25 +47,37 @@ public class AiService {
         objectMapper.registerModule(new JavaTimeModule());
         String prompt = "다음의 정보를 가지고 맞춤형 월간 보안 리포트를 작성해주세요. "
         + "정보는 다음과 같습니다. \n"
-        + "1. 최근 한 달간 발송된 메일 주요 스팸메일들의 정보: " + reportRequestCreatedEventDto.getTopic()
-        + "2. 수신자 성별: " + reportRequestCreatedEventDto.getTargetGender()
-        + "3. 수신자 나이: " + reportRequestCreatedEventDto.getTargetAge()
-        + "4. 수신자 관심사: " + reportRequestCreatedEventDto.getTargetInterest();
+        + "1. 최근 한 달간 발송된 메일 주요 스팸메일들의 정보: " + reportRequestCreatedEventDto.getTopic() + "\n"
+        + "2. 수신자 성별: " + reportRequestCreatedEventDto.getTargetGender() + "\n"
+        + "3. 수신자 나이: " + reportRequestCreatedEventDto.getTargetAge() + "\n"
+        + "4. 수신자 관심사: " + reportRequestCreatedEventDto.getTargetInterest() + "\n\n"
+        + "출력 형식은 `반드시` 아래와 같은 JSON 형식으로 출력해주세요.\n"
+        + "리포트 내용은 HTML 형식으로 작성하며, 모든 내용은 수신자의 관심사에 맞게 작성해주세요.\n"
+        + "리포트는 500자 정도의 분량이어야 하며, 최근 유행하는 스팸 메일에 대한 통계적 분석과\n"
+        + "수신자의 정보를 고려하여 특별히 주의 해야할 메일들에 대해 간단한 경고를 포함해야 합니다.\n"
+        + "아래의 {{리포트 내용}} 은 하나의 변수로서, 생성한 리포트의 내용을 해당 변수와 치환하여 출력해주세요.\n"
+        + "{\n"
+        + "    \"report\": \"<html>{{리포트 내용}}</html>\"\n"
+        + "}\n\n";
+
+
+
 
         String result = chat(prompt);
+        String report = result.split("\"")[3];
+        report = report.replace("\\n", "<br>");
 
         ReportCreatedEventDto reportCreatedEventDto = new ReportCreatedEventDto();
         reportCreatedEventDto.setId(reportRequestCreatedEventDto.getTargetId());
-        reportCreatedEventDto.setActionBy("REPORT_REQUEST");
-        reportCreatedEventDto.setWhenActioned(LocalDateTime.now());
-        reportCreatedEventDto.setAiInput(prompt);
-        reportCreatedEventDto.setAiOutput(result);
+        reportCreatedEventDto.setTargetAddress(reportRequestCreatedEventDto.getTargetAddress());
+        reportCreatedEventDto.setReport(report);
+
 
         Ai ai = Ai.builder()
             .actionBy("REPORT_REQUEST")
-            .whenActioned(reportCreatedEventDto.getWhenActioned())
-            .aiInput(reportCreatedEventDto.getAiInput())
-            .aiOutput(reportCreatedEventDto.getAiOutput())
+            .whenActioned(LocalDateTime.now())
+            .aiInput(prompt)
+            .aiOutput(result)
             .build();
         aiRepository.save(ai);
 
@@ -125,6 +137,7 @@ public class AiService {
         + "정보는 다음과 같습니다. \n"
         + "1. 메일 내용: " + mailNotTaggedSpamEventDto.getMailContent() + "\n\n"
         + "출력 형식은 `반드시` 아래와 같은 JSON 형식으로 출력해주세요.\n"
+        + "내용 판별이 힘든 경우 `내용 요약 불가` 로 출력해주세요.\n"
         + "{\n"
         + "    \"summary\": \"메일 요약\"\n"
         + "}\n\n";

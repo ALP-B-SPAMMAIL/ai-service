@@ -11,8 +11,6 @@ import lombok.Setter;
 @NoArgsConstructor  
 public class ReportCreatedEventDto extends AbstractDto {
     private int id;
-    private String actionBy;
-    private LocalDateTime whenActioned;
-    private String aiInput;
-    private String aiOutput;
+    private String report;
+    private String targetAddress;
 }
