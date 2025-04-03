@@ -32,7 +32,7 @@ import okhttp3.*;
 @Service
 @RequiredArgsConstructor
 public class AiService {
-    private final String API_KEY = "***REMOVED***";
+    private final String API_KEY = "**REMOVED**";
     private static final String API_URL = "https://api.openai.com/v1/chat/completions";
 
     private final OkHttpClient client = new OkHttpClient();
